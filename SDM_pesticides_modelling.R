@@ -10,7 +10,7 @@ if(Sys.info()[4] == "D01RI1700308") {
 }else if(Sys.info()[4] == "S-JRCIPRAP320P") {
   wd <- ""
 }else if(Sys.info()[4] == "L2100739RI") {
-  wd <- "C:/Users/rotllxa/D5_FFGRCC_FarmlandBirds/"
+  wd <- "C:/Users/rotllxa//"
   gbif_creds <- "C:/Users/rotllxa/"
 }else if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
   if(!dir.exists("/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/")) 
@@ -18,7 +18,9 @@ if(Sys.info()[4] == "D01RI1700308") {
   wd <- "/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/"
   gbif_creds <- "/home/rotllxa/Documents/"
 }else{
-  wd <- "/Users/xavi_rp/Documents/D5_FFGRCC/"
+  if(!dir.exists("/Users/xavi_rp/Documents/D5_FFGRCC/SDMs_Pesti_data/")) 
+    dir.create("/Users/xavi_rp/Documents/D5_FFGRCC/SDMs_Pesti_data/")
+  wd <- "/Users/xavi_rp/Documents/D5_FFGRCC/SDMs_Pesti_data/"
   gbif_creds <- "/Users/xavi_rp/Dropbox/GBIF_credentials/"
 }
 
@@ -54,8 +56,13 @@ library(sf)
 ## Species ####
 
 # Candidates for modelling:
-sps <- read.csv("/home/rotllxa/Documents/Birds_SDM_Pesticides/sp_list_FBI_3.csv", header = FALSE)
-sps
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+  sps <- read.csv("/home/rotllxa/Documents/Birds_SDM_Pesticides/sp_list_FBI_3.csv", header = FALSE)
+  sps
+}else{
+  sps <- read.csv("/Users/xavi_rp/Documents/D5_FFGRCC/SDMs_Pesti/sp_list_FBI_3.csv", header = FALSE)
+  sps
+}
 sps <- as.vector(sps$V2)
 sps
 
@@ -64,7 +71,12 @@ sps
 
 ### Worldclim and elevation ####
 
-preds_dir <- "/eos/jeodpp/home/users/rotllxa/European_butterflies_SDMs_data/"
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+  preds_dir <- "/eos/jeodpp/home/users/rotllxa/European_butterflies_SDMs_data/"
+}else{
+  preds_dir <- "/Users/xavi_rp/Documents/D5_FFGRCC/European_butterflies_SDMs_data/"
+}
+
 
 worldclim_all <- stack(paste0(preds_dir, "worldclim_all.tif"))
 worldclim_all <- terra::rast(paste0(preds_dir, "worldclim_all.tif"))
@@ -99,7 +111,7 @@ if(create_mask == "yes"){
   msk_FR <- terra::mask(worldclim_all[[1]], 
                         mask = fr_cont
                         #filename = ""
-  )
+                        )
   plot(msk_FR)
   
   fr_ext <- terra::ext(-5.5, 8.5, 42, 51)
@@ -137,8 +149,12 @@ names(worldclim_all_FR)
 
 ### Land cover ####
 
-lc_dir <- "/Users/xavi_rp/Documents/D5_FFGRCC/land_cover/"
-lc_dir <- "/eos/jeodpp/home/users/rotllxa/land_cover/"
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+  lc_dir <- "/eos/jeodpp/home/users/rotllxa/land_cover/"
+}else{
+  lc_dir <- "/Users/xavi_rp/Documents/D5_FFGRCC/land_cover/"
+}
+
 lc1km_files <- list.files(lc_dir, full.names = TRUE)[grepl("lc1km_", list.files(lc_dir))]
 lc1km_files
 lc1km_all <- rast(lc1km_files)
@@ -179,8 +195,21 @@ sum(!is.na(values(worldclim_all_FR[[24]], mat = FALSE)))  # cells with data
 
 
 ## Background points ####
-bckgr <- read.csv(paste0(preds_dir, "background_points.csv"), header = TRUE)
-nrow(bckgr)
+
+calculate_bckgr <- "yes"
+calculate_bckgr <- "no"
+if(calculate_bckgr == "yes"){
+  bckgr <- randomPoints(as(worldclim_all_FR[[1]], "Raster"), 
+                        n = 15000)
+  bckgr <- as.data.frame(bckgr)
+  head(bckgr)
+  nrow(bckgr)
+  
+  write.csv(bckgr, "background_points.csv", row.names = FALSE)
+}
+  
+
+bckgr <- read.csv("background_points.csv", header = TRUE)
 
 
 
