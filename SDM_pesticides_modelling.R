@@ -28,7 +28,7 @@ setwd(wd)
 
 library(tidyr)
 library(ENMeval)
-library(raster)
+#library(raster)
 library(dplyr)
 library(dismo)
 library(data.table)
@@ -57,7 +57,7 @@ library(sf)
 
 # Candidates for modelling:
 if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
-  sps <- read.csv("/home/rotllxa/Documents/Birds_SDM_Pesticides/sp_list_FBI_3.csv", header = FALSE)
+  sps <- read.csv("/home/rotllxa/Documents/SDMs_Pesti/sp_list_FBI_3.csv", header = FALSE)
   sps
 }else{
   sps <- read.csv("/Users/xavi_rp/Documents/D5_FFGRCC/SDMs_Pesti/sp_list_FBI_3.csv", header = FALSE)
@@ -78,7 +78,7 @@ if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodp
 }
 
 
-worldclim_all <- stack(paste0(preds_dir, "worldclim_all.tif"))
+#worldclim_all <- stack(paste0(preds_dir, "worldclim_all.tif"))
 worldclim_all <- terra::rast(paste0(preds_dir, "worldclim_all.tif"))
 worldclim_all
 #plot(worldclim_all[[3]])
@@ -145,6 +145,7 @@ plot(worldclim_all_FR[[19]])
 head(values(worldclim_all_FR[[19]], mat = FALSE), 100)
 sum(!is.na(values(worldclim_all_FR[[19]], mat = FALSE)))
 names(worldclim_all_FR)
+terra::crs(worldclim_all_FR)
 
 
 ### Land cover ####
