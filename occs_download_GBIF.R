@@ -13,7 +13,8 @@ if(Sys.info()[4] == "D01RI1700308") {
 }else if(Sys.info()[4] == "L2100739RI") {
   wd <- "C:/Users/rotllxa/D5_FFGRCC_FarmlandBirds/"
   gbif_creds <- "C:/Users/rotllxa/"
-}else if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-jd002-03")) {
+}else if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-jd002-03",
+                              "jeodpp-terminal-jd004-03.cidsn.jrc.it")) {
   if(!dir.exists("/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/")) 
     dir.create("/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/")
   wd <- "/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/"
@@ -40,7 +41,8 @@ library(sp)
 
 
 list.files()
-sps2dwnld <- read.csv("/home/rotllxa/Documents/Birds_SDM_Pesticides/sp_list_FBI_3.csv", header = FALSE)
+sps2dwnld_3 <- read.csv("/home/rotllxa/Documents/SDMs_Pesti/sp_list_FBI_3.csv", header = FALSE)
+sps2dwnld <- read.csv("/home/rotllxa/Documents/SDMs_Pesti/sp_list_FBI_all.csv", header = FALSE)
 head(sps2dwnld)
 length(sps2dwnld$V2)
 
@@ -52,6 +54,7 @@ sp_1_key <- as.data.frame(name_backbone(name='Iphiclides podalirius'))$speciesKe
 
 countr <- c("BE", "EL", "LT", "PT", "BG", "ES", "LU", "RO", "CZ", "FR", "HU", "SI", "DK", "HR", "MT", "SK", "DE", "IT", "NL", "FI", "EE", "CY", "AT", "SE", "IE", "LV", "PL")
 countr <- sort(countr)
+countr <- "FR"
 length(countr)
 
 
@@ -65,8 +68,10 @@ for(sp in sps2dwnld$V2){
   for(c in countr){
     num_occs <- occ_count(taxonKey = sp_key,
                           country = c,
-                          from = 1990,
-                          to = 2022)
+                          #from = 1990,
+                          from = 2013,
+                          #to = 2022)
+                          to = 2017)
     num_eu_occs <- num_eu_occs + num_occs
   }
   num_eu_occs_df <- rbind(num_eu_occs_df, data.frame(sp, sp_key, num_eu_occs))
@@ -77,13 +82,13 @@ for(sp in sps2dwnld$V2){
 as.data.table(num_eu_occs_df)
 num_eu_occs_df[num_eu_occs_df$num_eu_occs == min(num_eu_occs_df$num_eu_occs), ]
 
-write.csv(num_eu_occs_df, "Number_occs_sp_EU.csv", row.names = FALSE)
-num_eu_occs_df <- fread("Number_occs_sp_EU.csv", header = TRUE)
+write.csv(num_eu_occs_df, "Number_occs_sp_FR.csv", row.names = FALSE)
+num_eu_occs_df <- fread("Number_occs_sp_FR.csv", header = TRUE)
 num_eu_occs_df <- num_eu_occs_df[order(num_eu_occs_df$sp), ]
 
 library(viridis)
 
-pdf("num_occs_GBIF.pdf", width = 7, height = 9)
+pdf("num_occs_GBIF_FR.pdf", width = 7, height = 9)
 num_eu_occs_df %>%
   ggplot(aes(x = reorder(sp, desc(sp)), y = num_eu_occs)) + 
   geom_bar(stat = "identity", fill = viridis(39)) +
@@ -109,6 +114,7 @@ num_eu_occs_df[order(num_eu_occs_df$num_eu_occs), ]
 
 
 ## Downloading the data ####
+library(PreSPickR)
 
 taxons <- sps2dwnld$V2
 
@@ -116,8 +122,9 @@ t0 <- Sys.time()
 GetBIF(credentials = paste0(gbif_creds, "/gbif_credentials.RData"),
        taxon_list = taxons,
        download_format = "SIMPLE_CSV",
-       download_years = c(1990, 2021),
-       download_coords = c(-13, 48, 35, 72), #order: xmin, xmax, ymin, ymax
+       download_years = c(2013, 2017),
+       #download_coords = c(-13, 48, 35, 72), #order: xmin, xmax, ymin, ymax
+       download_coords = c(-6, 8, 42, 52), #order: xmin, xmax, ymin, ymax
        download_coords_accuracy = c(0, 250),
        rm_dupl = TRUE,
        cols2keep = c("species", "decimalLatitude", "decimalLongitude", #"elevation",
@@ -127,7 +134,7 @@ GetBIF(credentials = paste0(gbif_creds, "/gbif_credentials.RData"),
                      #"institutionCode",	"collectionCode",
                      #"ownerInstitutionCode",
                      "datasetKey"),
-       out_name = paste0("sp_records_", format(Sys.Date(), "%Y%m%d")))
+       out_name = paste0("sp_records_FR", format(Sys.Date(), "%Y%m%d")))
 
 Sys.time() - t0
 

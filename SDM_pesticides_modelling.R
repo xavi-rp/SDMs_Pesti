@@ -12,7 +12,9 @@ if(Sys.info()[4] == "D01RI1700308") {
 }else if(Sys.info()[4] == "L2100739RI") {
   wd <- "C:/Users/rotllxa//"
   gbif_creds <- "C:/Users/rotllxa/"
-}else if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+}else if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", 
+                              "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03",
+                              "jeodpp-terminal-jd004-03.cidsn.jrc.it" )) {
   if(!dir.exists("/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/")) 
     dir.create("/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/")
   wd <- "/eos/jeodpp/home/users/rotllxa/Birds_SDM_Pesticides/"
@@ -56,7 +58,9 @@ library(sf)
 ## Species ####
 
 # Candidates for modelling:
-if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", 
+                        "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03",
+                        "jeodpp-terminal-jd004-03.cidsn.jrc.it" )) {
   sps <- read.csv("/home/rotllxa/Documents/SDMs_Pesti/sp_list_FBI_3.csv", header = FALSE)
   sps
 }else{
@@ -71,7 +75,9 @@ sps
 
 ### Worldclim and elevation ####
 
-if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", 
+                        "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03",
+                        "jeodpp-terminal-jd004-03.cidsn.jrc.it")) {
   preds_dir <- "/eos/jeodpp/home/users/rotllxa/European_butterflies_SDMs_data/"
 }else{
   preds_dir <- "/Users/xavi_rp/Documents/D5_FFGRCC/European_butterflies_SDMs_data/"
@@ -150,7 +156,9 @@ terra::crs(worldclim_all_FR)
 
 ### Land cover ####
 
-if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03")) {
+if(Sys.info()[4] %in% c("jeodpp-terminal-jd001-03", "jeodpp-terminal-03", 
+                        "jeodpp-terminal-dev-12", "jeodpp-terminal-jd002-03",
+                        "jeodpp-terminal-jd004-03.cidsn.jrc.it")) {
   lc_dir <- "/eos/jeodpp/home/users/rotllxa/land_cover/"
 }else{
   lc_dir <- "/Users/xavi_rp/Documents/D5_FFGRCC/land_cover/"
@@ -211,7 +219,8 @@ if(calculate_bckgr == "yes"){
   
 
 bckgr <- read.csv("background_points.csv", header = TRUE)
-
+head(bckgr)
+nrow(bckgr)
 
 
 ## FBI birds Occurrences ####
